@@ -1,0 +1,17 @@
+<html>
+<head>
+<script src="three.min.js"></script>
+</head>
+<body>
+</body>
+<script>
+// Create a renderer
+var renderer = new THREE.WebGLRenderer({antialias: true});
+renderer.setSize(800, 600);
+// Plug it into the document
+document.body.appendChild(renderer.domElement);
+// Make it pretty!
+renderer.setClearColor(0xEEEEEE, 1.0);
+renderer.clear();
+</script>
+</html>

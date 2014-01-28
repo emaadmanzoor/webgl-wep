@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Simplest WebGL Example</title>
+</head>
+<body>
+<!-- The canvas to do WebGL in -->
+<canvas id="webgl_canvas" width="640" height="480"></canvas>
+
+<!-- The script that does the drawing -->
+<script type="text/javascript">
+function shaderProgram(gl, vs, fs) {
+  var prog = gl.createProgram();
+  var addshader = function(type, source) {
+    var s = gl.createShader((type == 'vertex') ?
+			    gl.VERTEX_SHADER : gl.FRAGMENT_SHADER);
+    gl.shaderSource(s, source);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+      throw "Could not compile "+type+
+	" shader:\n\n"+gl.getShaderInfoLog(s);
+    }
+    gl.attachShader(prog, s);
+  };
+  addshader('vertex', vs);
+  addshader('fragment', fs);
+  gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+    throw "Could not link the shader program!";
+  }
+  return prog;
+}
+
+function attributeSetFloats(gl, prog, attr_name, rsize, arr) {
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(arr),
+		gl.STATIC_DRAW);
+  var attr = gl.getAttribLocation(prog, attr_name);
+  gl.enableVertexAttribArray(attr);
+  gl.vertexAttribPointer(attr, rsize, gl.FLOAT, false, 0, 0);
+}
+
+// The WebGL context
+var gl;
+// The shader program to draw with
+var prog;
+
+function setup() {
+  try {
+    gl = document.getElementById("webgl_canvas")
+      .getContext("webgl");
+    if (!gl) { throw ""; }
+  } catch (err) {
+    throw "Your web browser does not support WebGL!";
+  }
+
+  var vertexShader =
+    "attribute vec3 pos;"+
+    "void main() {"+
+    "	gl_Position = vec4(pos, 1.0);"+
+    "}";
+  var fragmentShader = 
+    "void main() {"+
+    "	gl_FragColor = vec4(0.2, 0.9, 0.2, 1.0);"+
+    "}";
+
+  prog = shaderProgram(gl, vertexShader, fragmentShader);
+
+  attributeSetFloats(gl, prog, "pos", 3, [
+      -0.5, -0.5, 0,
+    0, 0.5, 0,
+    0.5, -0.5, 0,
+  ]);
+  
+  gl.useProgram(prog);
+}
+
+function draw() {
+  gl.clearColor(0.1, 0.1, 0.3, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+}
+
+function init() {
+  try {
+    setup();
+    draw();
+  } catch (e) {
+    alert("Error: "+e);
+  }
+}
+
+init();
+</script>
+</body>
+</html>

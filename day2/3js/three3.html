@@ -1,0 +1,60 @@
+<html>
+<head>
+<script src="three.min.js"></script>
+</head>
+<body>
+</body>
+<script>
+// Create a renderer
+var renderer = new THREE.WebGLRenderer({antialias: true});
+var width = 800;
+var height = 600;
+renderer.setSize(width, height);
+
+// Plug it into the document
+document.body.appendChild(renderer.domElement);
+
+// Make it pretty!
+renderer.setClearColor(0xEEEEEE, 1.0);
+
+// Create a camera
+// new THREE.PerspectiveCamera( FOV, viewAspectRatio, zNear, zFar );
+var camera = new THREE.PerspectiveCamera(45, width/height, 1, 10000);
+camera.position.z = 300;
+
+// Make a scene
+var scene = new THREE.Scene();
+
+// Make a light
+var light = new THREE.SpotLight();
+light.position.set( 170, 330, -160 );
+scene.add(light);
+
+// Make a cube with material that responds to lighting.
+var litCube = new THREE.Mesh(
+new THREE.CubeGeometry(50, 50, 50),
+new THREE.MeshLambertMaterial({color: 0xFFFFFF}));
+litCube.position.y = 55;
+scene.add(litCube);
+
+var cube = new THREE.Mesh(new THREE.CubeGeometry(50,50,50),
+               new THREE.MeshBasicMaterial({color: 0x000000}));
+scene.add(cube);
+
+function animate(t) {
+	// spin the camera in a circle
+	camera.position.x = Math.sin(t/1000)*300;
+	camera.position.y = 150;
+	camera.position.z = Math.cos(t/1000)*300;
+
+	// you need to update lookAt every frame when camera is moving.
+	camera.lookAt(scene.position);
+
+	// renderer automatically clears unless autoClear = false
+	renderer.render(scene, camera);
+	window.requestAnimationFrame(animate, renderer.domElement);
+};
+animate(new Date().getTime());
+
+</script>
+</html>

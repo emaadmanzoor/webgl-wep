@@ -1,0 +1,34 @@
+<html>
+<head>
+<script src="three.min.js"></script>
+</head>
+<body>
+<script id="vertex" type="text/x-glsl-es-vert">
+varying float vZ;
+uniform float time;
+void main() {
+  vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+  mvPosition.y += 20.0*sin(time*0.5+mvPosition.x/25.0);
+  mvPosition.x += 30.0*cos(time*0.5+mvPosition.y/25.0);
+  vec4 p = projectionMatrix * mvPosition;
+  vZ = p.z;
+  gl_Position = p;
+}
+</script>
+<script id="fragment" type="text/x-glsl-es-frag">
+varying float vZ;
+uniform float time;
+uniform vec2 size;
+void main() {
+  vec2 d = gl_FragCoord.xy - (0.5+0.02*sin(time))*size;
+  float a = sin(time*0.3)*2.0*3.14159;
+  d = vec2( d.x*cos(a) + d.y*sin(a),
+           -d.x*sin(a) + d.y*cos(a));
+  vec2 rg = vec2(1.0)-abs(d)/(0.5*size);
+  float b = abs(vZ) / 160.0;
+  gl_FragColor = vec4(rg,b,1.0);
+}
+</script>
+<script src="three5.js"></script>
+</body>
+</html>
